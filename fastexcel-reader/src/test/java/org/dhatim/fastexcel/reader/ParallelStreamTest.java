@@ -3,6 +3,7 @@ package org.dhatim.fastexcel.reader;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -15,13 +16,20 @@ public class ParallelStreamTest {
   void parallelStreams() throws Exception {
     try (InputStream in = Resources.open("/xlsx/calendar_stress_test.xlsx");
          ReadableWorkbook wb = new ReadableWorkbook(in)) {
+    	
+    	
+    	
       String sequential = wb.getFirstSheet().openStream()
           .map(row -> collectToString(row.stream()))
           .collect(joining("\n"));
+      
+     
       String parallel = wb.getFirstSheet().openStream().parallel()
           .map(row -> collectToString(row.stream().parallel()))
           .collect(joining("\n"));
       assertThat(sequential).isEqualTo(parallel);
+      System.out.println(parallel);
+      
     }
   }
 

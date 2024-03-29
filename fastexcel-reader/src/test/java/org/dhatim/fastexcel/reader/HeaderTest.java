@@ -27,6 +27,7 @@ class HeaderTest {
     @Test
     void testInsufficientBytes() {
         byte[] bytes = new byte[1];
+       
         assertThatThrownBy(() -> ReadableWorkbook.isOLE2Header(bytes)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> ReadableWorkbook.isOOXMLZipHeader(bytes)).isInstanceOf(IllegalArgumentException.class);
     }

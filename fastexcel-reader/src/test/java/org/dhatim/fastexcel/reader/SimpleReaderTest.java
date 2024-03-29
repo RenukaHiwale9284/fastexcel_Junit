@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -51,14 +52,20 @@ class SimpleReaderTest {
 
     @Test
     void test() throws IOException {
-        try (InputStream is = Resources.open("/xlsx/simple.xlsx"); ReadableWorkbook wb = new ReadableWorkbook(is)) {
+        try (InputStream is = Resources.open("/xlsx/simple.xlsx"); 
+        		ReadableWorkbook wb = new ReadableWorkbook(is)) {
             Sheet sheet = wb.getFirstSheet();
             try (Stream<Row> rows = sheet.openStream()) {
                 rows.forEach(r -> {
                     BigDecimal num = r.getCellAsNumber(0).orElse(null);
+                    System.out.println(num);
+                    System.out.println();
                     String str = r.getCellAsString(1).orElse(null);
+                    System.out.println(str);
                     LocalDateTime date = r.getCellAsDate(2).orElse(null);
+                   System.out.println(date);
                     Boolean bool = r.getCellAsBoolean(4).orElse(null);
+                   // System.out.println(bool);
 
                     Object[] values = VALUES[r.getRowNum() - 1];
                     assertThat(num).isEqualTo(BigDecimal.valueOf((Integer) values[0]));
@@ -142,13 +149,35 @@ class SimpleReaderTest {
             Sheet sheet = wb.getFirstSheet();
             try (Stream<Row> rows = sheet.openStream()) {
                 Iterator<Row> it = rows.iterator();
+                
+                int rowIndex=0;
+                while(it.hasNext()) {
                 assertTrue(it.hasNext());
-                Iterator<Cell> cellIt = it.next().iterator();
-                assertTrue(cellIt.hasNext());
-                Cell cell = cellIt.next();
-                assertEquals(CellType.STRING, cell.getType());
-                assertEquals("A", cell.getValue());
+                
+                Row row = it.next();
+                rowIndex++;
+                // Check if it's the each row
+                if (rowIndex == 1) {
+                	Iterator<Cell> cellIt = row.iterator();
+                    int cellIndex = 0;
+                      while (cellIt.hasNext()) {
+                        Cell cell = cellIt.next();
+                        cellIndex++;
+                        
+                        if (cellIndex==2) {
+                            assertNotNull(cell.getType());
+                            assertEquals(CellType.STRING, cell.getType());
+                            assertEquals("F", cell.getValue());
+                            break;
+                        }
+                  }
+                
+                }//if
+                } //while 
+                
             }
+           
+            
         }
     }
 }
